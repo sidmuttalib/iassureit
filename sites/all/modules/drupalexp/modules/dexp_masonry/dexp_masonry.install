@@ -1,0 +1,21 @@
+<?php
+
+function dexp_masonry_install() {
+  $data_type = Database::getConnection()->databaseType();
+  switch ($data_type) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE IF NOT EXISTS {dexp_masonry} (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `view` varchar(255) NOT NULL,
+                `item` int(11) NOT NULL,
+                `width` int(11) NOT NULL,
+                `height` int(11) NOT NULL,
+                PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+              ");
+      break;
+    case 'pgsql':
+      break;
+  }
+}

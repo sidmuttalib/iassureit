@@ -1,0 +1,8 @@
+name = DrupalExp shortcodes
+description = Provides a basic shortcode like button, title, icons and an advance shortcode like accordion, tab, testimonial slider, carousel, progress bar, responsive column layout...
+package = DrupalExp
+core = 7.x
+dependencies[] = filter
+dependencies[] = shortcode
+version = "7.x-1.0"
+core = "7.x"

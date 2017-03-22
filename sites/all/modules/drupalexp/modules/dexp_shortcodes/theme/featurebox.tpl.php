@@ -1,0 +1,1 @@
+<div class="moving-zone"><div class="popup shadow-1"><div class="popup-content"><div class="popup-text"><h2><?php if($title!=''){print $title;}?></h2><p><?php if($content!=''){print $content;}?></p></div></div></div></div>

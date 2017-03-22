@@ -1,0 +1,124 @@
+<?php
+module_load_include('inc','dexp_shortcodes','includes/box');
+module_load_include('inc','dexp_shortcodes','includes/animate');
+module_load_include('inc','dexp_shortcodes','includes/button');
+module_load_include('inc','dexp_shortcodes','includes/skillbar');
+module_load_include('inc','dexp_shortcodes','includes/piegraph');
+module_load_include('inc','dexp_shortcodes','includes/carousel');
+module_load_include('inc','dexp_shortcodes','includes/title');
+module_load_include('inc','dexp_shortcodes','includes/embeded');
+module_load_include('inc','dexp_shortcodes','includes/stats');
+module_load_include('inc','dexp_shortcodes','includes/accordion');
+module_load_include('inc','dexp_shortcodes','includes/icon');
+module_load_include('inc','dexp_shortcodes','includes/flipbox');
+module_load_include('inc','dexp_shortcodes','includes/tab');
+module_load_include('inc','dexp_shortcodes','includes/column');
+module_load_include('inc','dexp_shortcodes','includes/social');
+module_load_include('inc','dexp_shortcodes','includes/testimonial');
+module_load_include('inc','dexp_shortcodes','includes/rating');
+module_load_include('inc','dexp_shortcodes','includes/maps');
+module_load_include('inc','dexp_shortcodes','includes/bxslider');
+module_load_include('inc','dexp_shortcodes','includes/lightbox');
+module_load_include('inc','dexp_shortcodes','includes/video');
+module_load_include('inc','dexp_shortcodes','includes/3dtestimonial');
+module_load_include('inc','dexp_shortcodes','includes/featurebox');
+/**
+* Implements hook_wysiwyg_editor_settings_alter().
+*/
+function dexp_shortcodes_wysiwyg_editor_settings_alter(&$settings, $context) {
+  if ($context['profile']->editor == 'ckeditor') {
+    $settings['allowedContent'] = TRUE;
+  }
+}
+
+/**
+* Implementation of hook_shortcode_info().
+*/
+function dexp_shortcodes_shortcode_info() {
+ $shortcodes = array();
+ dexp_shortcodes_box_shortcode_info($shortcodes);
+ dexp_shortcodes_animate_shortcode_info($shortcodes);
+ dexp_shortcodes_button_shortcode_info($shortcodes);
+ dexp_shortcodes_skillbar_shortcode_info($shortcodes);
+ dexp_shortcodes_piegraph_shortcode_info($shortcodes);
+ dexp_shortcodes_carousels_shortcode_info($shortcodes);
+ dexp_shortcodes_carousel_shortcode_info($shortcodes);
+ dexp_shortcodes_title_shortcode_info($shortcodes);
+ dexp_shortcodes_embeded_shortcode_info($shortcodes);
+ dexp_shortcodes_stats_shortcode_info($shortcodes);
+ dexp_shortcodes_accordions_shortcode_info($shortcodes);
+ dexp_shortcodes_accordion_shortcode_info($shortcodes);
+ dexp_shortcodes_icon_shortcode_info($shortcodes);
+ dexp_shortcodes_flipbox_shortcode_info($shortcodes);
+ dexp_shortcodes_tabs_shortcode_info($shortcodes);
+ dexp_shortcodes_tab_shortcode_info($shortcodes);
+ dexp_shortcodes_column_shortcode_info($shortcodes);
+ dexp_shortcodes_social_shortcode_info($shortcodes);
+ dexp_shortcodes_testimonials_shortcode_info($shortcodes);
+ dexp_shortcodes_testimonial_shortcode_info($shortcodes);
+ dexp_shortcodes_rating_shortcode_info($shortcodes);
+ dexp_shortcodes_maps_shortcode_info($shortcodes);
+ dexp_shortcodes_bxslider_shortcode_info($shortcodes);
+ dexp_shortcodes_bxitem_shortcode_info($shortcodes);
+ dexp_shortcodes_lightbox_shortcode_info($shortcodes);
+ dexp_shortcodes_video_shortcode_info($shortcodes);
+ dexp_shortcodes_3dtestimonials_shortcode_info($shortcodes);
+ dexp_shortcodes_3dtestimonial_shortcode_info($shortcodes);
+ dexp_shortcodes_featurebox_shortcode_info($shortcodes);
+ return $shortcodes;
+}
+
+/**
+ * Implement hook_theme().
+ */
+function dexp_shortcodes_theme(){
+  $themes = array();
+  dexp_shortcodes_box_theme($themes);
+  dexp_shortcodes_button_theme($themes);
+  dexp_shortcodes_skillbar_theme($themes);
+  dexp_shortcodes_piegraph_theme($themes);
+  dexp_shortcodes_carousels_theme($themes);
+  dexp_shortcodes_carousel_theme($themes);
+  dexp_shortcodes_title_theme($themes);
+  dexp_shortcodes_embeded_theme($themes);
+  dexp_shortcodes_stats_theme($themes);
+  dexp_shortcodes_accordions_theme($themes);
+  dexp_shortcodes_accordion_theme($themes);
+  dexp_shortcodes_icon_theme($themes);
+  dexp_shortcodes_flipbox_theme($themes);
+  dexp_shortcodes_social_theme($themes);
+  dexp_shortcodes_testimonials_theme($themes);
+  dexp_shortcodes_testimonial_theme($themes);
+  //dexp_shortcodes_rating_theme($themes);
+  dexp_shortcodes_maps_theme($themes);
+  dexp_shortcodes_bxslider_theme($themes);
+  dexp_shortcodes_bxitem_theme($themes);
+  dexp_shortcodes_lightbox_theme($themes);
+  dexp_shortcodes_video_theme($themes);
+  dexp_shortcodes_3dtestimonials_theme($themes);
+  dexp_shortcodes_3dtestimonial_theme($themes);
+  dexp_shortcodes_featurebox_theme($themes);
+  return $themes;
+}
+
+function dexp_shortcodes_init() {
+	//Clear cache of NON CACHE shortcode
+	$num_deleted = db_delete('cache_filter')
+  	->condition('data', '%<!--DRUPAL NO CACHE-->%','LIKE')
+  	->execute();
+  	$num_deleted = db_delete('cache_field')
+  	->condition('data', '%<!--DRUPAL NO CACHE-->%','LIKE')
+  	->execute();
+}
+
+/**
+ * Implements hook_theme_registry_alter()
+**/
+function dexp_shortcodes_theme_registry_alter(&$theme_registry) {
+	global $conf;
+	$theme = $conf['theme_default'];
+	$theme_path = drupal_get_path('theme', $theme);
+  	$theme_registry_copy = $theme_registry;
+  	_theme_process_registry($theme_registry_copy, 'phptemplate', 'theme_engine', 'pow', $theme_path);
+  	$theme_registry += array_diff_key($theme_registry_copy, $theme_registry);
+}

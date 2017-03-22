@@ -1,0 +1,32 @@
+<?php
+
+/*
+ * Implements hook_views_api
+ */
+
+function dexp_grid_views_api() {
+  return array(
+      'api' => 3,
+  );
+}
+
+/**
+ * Preprocess function to build the dexp views grid
+ */
+function template_preprocess_views_dexp_grid(&$vars) {
+  $view = $vars['view'];
+  $options = $view->style_plugin->options;
+  $vars['options'] = $options;
+  if(!$options['grid_bootstrap']){
+    drupal_add_js(drupal_get_path('module', 'dexp_grid').'/js/dexp-grid.js');
+    $grid_options = new stdClass();
+    $grid_options->itemWidth = (int)$options['grid_itemWidth'];
+    $grid_options->itemHeight = (int)$options['grid_itemHeight'];
+    $grid_options->margin = (int)$options['grid_margin'];
+    $grid_options->cols = (int)$options['grid_cols_md'];
+    $grid_options->phoneWidth = (int)$options['grid_phoneWidth'];
+    $grid_options = json_encode($grid_options);
+    $gridJS = 'jQuery(document).ready(function($){$(".dexp-grid-items").dexpGrid('.$grid_options.')})';
+    drupal_add_js($gridJS,'inline');
+  }
+}

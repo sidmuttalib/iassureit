@@ -1,0 +1,42 @@
+.dexp-dropdown > ul{
+    margin: 0;
+    padding: 0;
+}
+.dexp-dropdown > ul li{
+    display: inline-block;
+    position: relative;
+}
+.dexp-dropdown > ul ul:not(.dexp-mega){
+    min-width: 200px;
+    position: absolute;
+    margin: 30px 0 0 0;
+    padding: 0;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    z-index: 0;
+    -webkit-transition: margin 0.1s linear;
+    -moz-transition: margin 0.1s linear;
+    -ms-transition: margin 0.1s linear;
+    -o-transition: margin 0.1s linear;
+    transition: margin 0.1s linear;
+}
+.dexp-dropdown > ul ul li{
+    width: 100%;
+    display: inline-block;
+}
+.dexp-dropdown > ul ul ul{
+    top: 0;
+    left: 99%;
+}
+.dexp-dropdown ul li:hover > ul{
+    z-index: 1001;
+    height: auto;
+    opacity: 1;
+    overflow: visible;
+    margin-top: 0;
+}
+.dexp-dropdown > ul ul ul.back{
+    top: 0;
+    left: -100%;
+}

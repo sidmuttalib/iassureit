@@ -1,0 +1,2 @@
+[28-Sep-2015 07:31:05 UTC] PHP Fatal error:  Call to undefined function _system_rebuild_theme_data() in /home/adminpro1/public_html/includes/theme.inc on line 798
+[28-Sep-2015 07:31:06 UTC] PHP Fatal error:  Call to undefined function _system_rebuild_theme_data() in /home/adminpro1/public_html/includes/theme.inc on line 798

@@ -1,0 +1,67 @@
+div.dexp_carousel {
+  .carousel-inner{
+  img{
+  width:100%;
+  height:auto;
+  }
+  }
+  .carousel-control{
+    text-shadow: white;
+    z-index:99;
+    font-size: 24px;
+    span{
+      top:50%;
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      margin-top: -20px;
+      text-align: center;
+      opacity:0;
+      line-height:35px;
+      .transition(all,0.1s);
+    }
+    &.right{
+      background: none;
+      span{
+        right:0;
+      }
+      &:hover{
+        span{
+          opacity:1;
+          right: 20px;
+        }
+      }
+    }
+    &.left{
+      background: none;
+      span{
+        left:0;
+      }
+      &:hover{
+        span{
+          opacity:1;
+          left: 20px;
+        }
+      }
+    }
+  }
+  &:hover{
+    .right{
+      span{
+          opacity:1;
+          right: 20px;
+        }
+      
+    }
+    .left{
+      span{
+          opacity:1;
+          left: 20px;
+        }
+    }
+  }
+}

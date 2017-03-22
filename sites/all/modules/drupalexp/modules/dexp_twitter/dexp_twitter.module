@@ -1,0 +1,207 @@
+<?php
+
+/* Implement hook_block_info. */
+
+function dexp_twitter_block_info() {
+  $blocks = array();
+  $num = variable_get('dexp_twitter_block_num', 2);
+  for ($i = 1; $i <= $num; $i++) {
+    $blocks["dexp_twitter_block_{$i}"] = array(
+        'info' => t("Dexp Twitter: Block {$i}"),
+        'cache' => DRUPAL_NO_CACHE,
+    );
+  }
+  return $blocks;
+}
+
+/* Implement hook_block_configure. */
+
+function dexp_twitter_block_configure($delta = '') {
+  //$num = variable_get('dexp_twitter_block_num',2);
+  if (substr($delta, 0, 19) == 'dexp_twitter_block_') {
+    $num = filter_var($delta, FILTER_SANITIZE_NUMBER_INT);
+    $form['dexp_twitter_block_oauth_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('OAuth settings'),
+        '#collapsed' => true,
+        '#collapsible' => true,
+    );
+    $form['dexp_twitter_block_oauth_settings']['dexp_twitter_block_consumer_key'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Consumer key'),
+        '#required' => true,
+        '#default_value' => variable_get('dexp_twitter_block_consumer_key_'.$num),
+    );
+    $form['dexp_twitter_block_oauth_settings']['dexp_twitter_block_consumer_secret'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Consumer secret'),
+        '#required' => true,
+        '#default_value' => variable_get('dexp_twitter_block_consumer_secret_'.$num),
+    );
+    $form['dexp_twitter_block_oauth_settings']['dexp_twitter_block_access_token'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Access token'),
+        '#required' => true,
+        '#default_value' => variable_get('dexp_twitter_block_access_token_'.$num),
+    );
+    $form['dexp_twitter_block_oauth_settings']['dexp_twitter_block_access_token_secret'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Access token secret'),
+        '#required' => true,
+        '#default_value' => variable_get('dexp_twitter_block_access_token_secret_'.$num),
+    );
+    $form['dexp_twitter_block_name'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Twitter account'),
+        '#required' => true,
+        '#default_value' => variable_get('dexp_twitter_block_name_'.$num),
+    );
+
+    $form['dexp_twitter_block_count'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Number of tweets'),
+        '#required' => true,
+        '#default_value' => variable_get('dexp_twitter_block_count_'.$num, 5),
+    );
+
+    $form['dexp_twitter_block_avatar'] = array(
+        '#type' => 'select',
+        '#title' => t('Show avatar'),
+        '#options' => array('none' => 'None', 'profile' => 'Profile image', 'icon' => 'Twitter icon'),
+        '#default_value' => variable_get('dexp_twitter_block_avatar_'.$num, 'none'),
+    );
+
+    $form['dexp_twitter_carousel_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Carousel settings'),
+        '#collapsed' => true,
+        '#collapsible' => true,
+    );
+
+    $form['dexp_twitter_carousel_settings']['dexp_twitter_carousel_mode'] = array(
+        '#type' => 'select',
+        '#title' => 'Mode',
+        '#options' => array('horizontal' => 'Horizontal', 'vertical' => 'Vertical', 'fade' => 'Fade'),
+        '#default_value' => variable_get('dexp_twitter_carousel_mode_'.$num, 'vertical'),
+    );
+
+    $form['dexp_twitter_carousel_settings']['dexp_twitter_carousel_minslides'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Min Slides',
+        '#default_value' => variable_get('dexp_twitter_carousel_minslides_'.$num, 1),
+    );
+
+    $form['dexp_twitter_carousel_settings']['dexp_twitter_carousel_maxslides'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Max Slides',
+        '#default_value' => variable_get('dexp_twitter_carousel_maxslides_'.$num, 3),
+    );
+
+    $form['dexp_twitter_carousel_settings']['dexp_twitter_carousel_controls'] = array(
+        '#type' => 'select',
+        '#title' => 'Controls',
+        '#options' => array(1 => 'Yes', 0 => 'No'),
+        '#default_value' => variable_get('dexp_twitter_carousel_controls_'.$num, 0),
+    );
+    return $form;
+  }
+}
+
+/* Implement hook_block_save. */
+
+function dexp_twitter_block_save($delta = '', $edit = array()) {
+  if (substr($delta, 0, 19) == 'dexp_twitter_block_') {
+    $num = filter_var($delta, FILTER_SANITIZE_NUMBER_INT);
+    variable_set('dexp_twitter_block_consumer_key_' . $num, $edit['dexp_twitter_block_consumer_key']);
+    variable_set('dexp_twitter_block_consumer_secret_' . $num, $edit['dexp_twitter_block_consumer_secret']);
+    variable_set('dexp_twitter_block_access_token_' . $num, $edit['dexp_twitter_block_access_token']);
+    variable_set('dexp_twitter_block_access_token_secret_' . $num, $edit['dexp_twitter_block_access_token_secret']);
+    variable_set('dexp_twitter_block_count_' . $num, $edit['dexp_twitter_block_count']);
+    variable_set('dexp_twitter_block_name_' . $num, $edit['dexp_twitter_block_name']);
+    variable_set('dexp_twitter_carousel_mode_' . $num, $edit['dexp_twitter_carousel_mode']);
+    variable_set('dexp_twitter_carousel_controls_' . $num, $edit['dexp_twitter_carousel_controls']);
+    variable_set('dexp_twitter_carousel_maxslides_' . $num, $edit['dexp_twitter_carousel_maxslides']);
+    variable_set('dexp_twitter_carousel_minslides_' . $num, $edit['dexp_twitter_carousel_minslides']);
+    variable_set('dexp_twitter_block_avatar_' . $num, $edit['dexp_twitter_block_avatar']);
+    //cache_clear_all('dexp_twitter_cache_'.$num,'cache');
+  }
+}
+
+/* Implement hook_block_view. */
+
+function dexp_twitter_block_view($delta) {
+  if (substr($delta, 0, 19) == 'dexp_twitter_block_') {
+    $num = filter_var($delta, FILTER_SANITIZE_NUMBER_INT);
+    return _dexp_twitter_block($num);
+  }
+}
+
+/* Implements hook_theme(). */
+
+function dexp_twitter_theme() {
+  $path = drupal_get_path('module', 'dexp_twitter');
+  return array(
+      'dexp_twitter_block' => array(
+          'template' => 'dexp_twitter',
+          'path' => $path . '/theme',
+          'pattern' => 'twitter__',
+          'preprocess functions' => array(
+              'template_preprocess',
+              'dexp_twitter_preprocess_twitter_block',
+          ),
+          'variables' => array(),
+      )
+  );
+}
+
+function dexp_twitter_preprocess_twitter_block(&$vars) {
+  $vars['block_id'] = drupal_html_id('dexp_twitter_block');
+  $js = array(
+      'dexp_twitter' => array(
+          $vars['block_id'] => $vars['settings'],
+      ),
+  );
+  drupal_add_js($js, 'setting');
+  drupal_add_js(drupal_get_path('module', 'dexp_twitter').'/js/dexp-twitter.js');
+}
+
+/* Helper function to call theme. */
+
+function _dexp_twitter_block($num) {
+  drupal_add_js(libraries_get_path('bxslider') . '/jquery.bxslider.min.js');
+  require_once 'dexp_twitter.inc';
+  $tweets = array();
+  //store cache
+  if ($cached = cache_get('dexp_twitter_cache_' . $num, 'cache')) {
+    $tweets = $cached->data;
+  }
+  //print_r($cached);
+  if (empty($tweets)) {
+    $tweets = dexp_twitter_get_tweets($num);
+    if (!empty($tweets)) {
+      //Cache 60 mins
+      cache_set('dexp_twitter_cache_' . $num, $tweets, 'cache', time() + 60 * 60);
+    }
+  }
+  $settings = array(
+      'name' => variable_get('dexp_twitter_block_name_' . $num),
+      'slideMargin' => 5,
+      'pager' => false,
+      'moveSlides' => 1,
+      'auto' => true,
+      'mode' => variable_get('dexp_twitter_carousel_mode_' . $num, 'vertical'),
+      'controls' => (bool)variable_get('dexp_twitter_carousel_controls_' . $num, 'false'),
+      'minSlides' => (int)variable_get('dexp_twitter_carousel_minslides_' . $num, 1),
+      'maxSlides' => (int)variable_get('dexp_twitter_carousel_maxslides_' . $num, 3),
+      'dexp_twitter_block_avatar' => variable_get('dexp_twitter_block_avatar_' . $num, 'none'),
+      'nextText' => '<i class="fa fa-angle-right"></i>',
+      'prevText' => '<i class="fa fa-angle-left"></i>'
+  );
+  $block = array(
+      'subject' => '',
+      'content' => theme('dexp_twitter_block', array(
+          'tweets' => $tweets,
+          'settings' => $settings)),
+  );
+  return $block;
+}

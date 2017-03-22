@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * Removed Block subtitle field.
+ * - Added block background color option.
+ * - Added video mute option.
+ */
+function dexp_animation_update_2(){
+	//Alter block title
+	db_change_field('block', 'title', 'title',
+    		array(
+      		'type' => 'varchar',
+      		'length' => 255,
+      		'not null' => TRUE,
+      		'default' => '',
+      		'description' => 'Custom title for the block. (Empty string will use block default title, <none> will remove the title, text will cause block to use specified title.)',
+      		'translatable' => TRUE,
+    		)
+  		);
+    $result = db_select('block','b')->fields('b')->execute();
+  	while($record = $result->fetchAssoc()) {
+  		$image = _dexp_animation_variable_get($record['module'], $record['delta'], 'dexp_block_background_image');
+  		$video = _dexp_animation_variable_get($record['module'], $record['delta'], 'dexp_block_background_video');
+  		$subtitle = _dexp_animation_variable_get($record['module'], $record['delta'], 'dexp_block_subtitle');
+  		$separator = variable_get('dexp_page_title_separator', '~');
+  		if($video){
+  			_dexp_animation_variable_set($record['module'], $record['delta'], 'background_type', 3);
+  		}elseif($image){
+  			_dexp_animation_variable_set($record['module'], $record['delta'], 'background_type', 2);
+  		}
+  		if($subtitle){
+  			$newtitle = $record['title'].$separator.$subtitle;
+  			$newtitle = substr($newtitle,0,255);
+  			$num_updated = db_update('block')
+  				->fields(array(
+    			'title' => $newtitle,
+  			))
+  			->condition('bid', $record['bid'], '=')
+  			->execute();
+  		}
+    }
+}

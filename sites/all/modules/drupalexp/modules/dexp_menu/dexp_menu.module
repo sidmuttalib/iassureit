@@ -1,0 +1,353 @@
+<?php
+
+/*
+ * * Implement hook_block_menu
+ */
+
+function dexp_menu_menu() {
+    $items['<container>'] = array(
+      'page callback' => 'drupal_not_found',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+    );
+    $items['<row>'] = array(
+      'page callback' => 'drupal_not_found',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+  );
+$items['<col>/%'] = array(
+        'page callback' => 'drupal_not_found',
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+);
+  $items['admin/drupalexp/menu'] = array(
+      'title' => t('Menu settings'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('dexp_menu_settings_form'),
+      'access arguments' => array('administer'),
+      'type' => MENU_NORMAL_ITEM
+  );
+  $items['contextual'] = array(
+      'title' => 'The contextual example page',
+      'page callback' => 'contextual_example_page',
+      'page arguments' => array(1),
+      'access callback' => TRUE
+  );
+  return $items;
+}
+
+function dexp_menu_settings_form() {
+  $form['dexp_menu_block_count'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Number of blocks',
+      '#default_value' => variable_get('dexp_menu_block_count', 3)
+  );
+  return system_settings_form($form);
+}
+
+/*
+ * * Implement hook_block_info
+ */
+
+function dexp_menu_block_info() {
+  $blocks = array();
+  $count = variable_get('dexp_menu_block_count', 3);
+  for ($i = 1; $i <= $count; $i++) {
+    $blocks['dexp_menu_block_' . $i] = array(
+        'info' => t('DrupalExp Dropdown Menu ' . $i),
+        'cache' => DRUPAL_NO_CACHE
+    );
+  }
+  return $blocks;
+}
+
+/*
+ * * Implement hook_block_configure
+ */
+
+function dexp_menu_block_configure($delta = '') {
+  if (str_replace('dexp_menu_block_', '', $delta) != $delta) {
+    $number = str_replace('dexp_menu_block_', '', $delta);
+    $form['dexp_menu_menu'] = array(
+        '#type' => 'select',
+        '#title' => t('Menu'),
+        '#required' => true,
+        '#default_value' => variable_get('dexp_menu_menu_' . $number, 'main-menu:0'),
+        '#options' => menu_parent_options(menu_get_menus(), array('mlid' => 0, 'plid' => 0)),
+    );
+    return $form;
+  }
+}
+
+/*
+ * * Implement hook_block_save.
+ */
+
+function dexp_menu_block_save($delta = '', $edit = array()) {
+  if (str_replace('dexp_menu_block_', '', $delta) != $delta) {
+    $number = str_replace('dexp_menu_block_', '', $delta);
+    variable_set('dexp_menu_menu_' . $number, $edit['dexp_menu_menu']);
+  }
+}
+
+/*
+ * * Implement hook_block_view
+ */
+
+function dexp_menu_block_view($delta) {
+  if (str_replace('dexp_menu_block_', '', $delta) != $delta) {
+    $number = str_replace('dexp_menu_block_', '', $delta);
+    return _dexp_menu_block($number);
+  }
+}
+
+/*
+ * *Implements hook_theme()
+ */
+
+function dexp_menu_theme(&$vars) {
+  $path = drupal_get_path('module', 'dexp_menu');
+  $themes = array();
+  $themes['dexp_menu_container'] = array(
+      'template' => 'container',
+      'path' => $path . '/theme',
+      'pattern' => 'dexp__menu__',
+      'preprocess functions' => array(
+          'template_preprocess',
+          'dexp_menu_preprocess_container',
+      ),
+      'variables' => array()
+  );
+  $themes['dexp_menu_row'] = array(
+      'template' => 'row',
+      'path' => $path . '/theme',
+      'pattern' => 'dexp__menu__',
+      'preprocess functions' => array(
+          'template_preprocess',
+          'dexp_menu_preprocess_row',
+      ),
+      'variables' => array()
+  );
+  $themes['dexp_menu_col'] = array(
+      'template' => 'col',
+      'path' => $path . '/theme',
+      'pattern' => 'dexp__menu__',
+      'preprocess functions' => array(
+          'template_preprocess',
+          'dexp_menu_preprocess_col',
+      ),
+      'variables' => array()
+  );
+  $themes['dexp_menu'] = array(
+          'template' => 'dexpmenu',
+          'path' => $path . '/theme',
+          'pattern' => 'dexpmenu__',
+          'preprocess functions' => array(
+              'template_preprocess',
+              'dexp_menu_preprocess_dexp_menu',
+          ),
+      );
+  return $themes;
+}
+
+function dexp_menu_preprocess_container(&$vars){
+    $href = isset($vars['element']['#href'])?$vars['element']['#href']:"";
+    $args = explode("/", $href);
+    $vars['attributes_array']['class'][] = 'dexp-menu-mega';
+    //$vars['attributes_array']['class'][] = 'custompadding';
+    //$vars['attributes_array']['data-padding'] = "0";
+    if(isset($args[1])){
+        $vars['attributes_array']['style'] = "width:{$args[1]}px;";
+    }else{
+        $vars['attributes_array']['class'][] = 'container';
+    }
+    $content = render($vars['element']['#below']);
+    preg_match('/<!--begin-->(.*?)<!--end-->/is', $content, $match);
+    if(isset($match[1])) $content = $match[1];
+    $vars['content'] = $content;
+}
+
+function dexp_menu_preprocess_row(&$vars){
+    $vars['classes_array'][] = 'row';
+    $vars['classes_array'][] = 'dexp-menu-row';
+    $content = render($vars['element']['#below']);
+    preg_match_all('/<!--begin-->(.*?)<!--end-->/is', $content, $matches);
+    $content2 = "";
+    if(!empty($matches[1])){
+        $content2 = implode("", $matches[1]);
+    }
+    $vars['content'] = empty($content2)?$content:$content2;
+}
+
+function dexp_menu_preprocess_col(&$vars){
+    $href = $vars['element']['#href'];
+    $args = explode("/", $href);
+    $vars['classes_array'][] = 'col-lg-'.$args[1];
+    $vars['classes_array'][] = 'col-md-'.$args[1];
+    $vars['classes_array'][] = 'col-sm-12';
+    $vars['classes_array'][] = 'col-xs-12';
+    $vars['classes_array'][] = 'dexp-menu-col';
+    $content = render($vars['element']['#below']);
+    preg_match('/<!--begin-->(.*?)<!--end-->/is', $content, $match);
+    if(isset($match[1])) $content = $match[1];
+    $vars['content'] = $content;
+    $title = $vars['element']['#title'];
+    if($title != '<none>'){
+        $vars['title'] = trim($title);
+    }
+    //print_r($vars); die;
+}
+
+function dexp_menu_preprocess_dexp_menu(&$vars) {
+  $vars['html_id'] = drupal_html_id('dexp-dropdown');
+  $vars['classes_array'][] = 'dexp-dropdown';
+}
+
+/*
+ * *Helper function to call theme.
+ */
+
+function _dexp_menu_block($number) {
+  //drupal_add_css(drupal_get_path('module', 'dexp_menu') . '/css/dexp-menu.css', array('media' => 'screen and (min-width: 992px)'));
+  drupal_add_css(drupal_get_path('module', 'dexp_menu') . '/css/dexp-mega-menu.css', array('media' => 'screen and (min-width: 992px)'));
+  drupal_add_css(drupal_get_path('module', 'dexp_menu') . '/css/dexp-mobile-menu.css', array('media' => 'screen and (max-width: 991px)'));
+  drupal_add_js(drupal_get_path('module', 'dexp_menu') . '/js/jquery.transform2d.js');
+  //drupal_add_js(drupal_get_path('module', 'dexp_menu') . '/js/jquery.mousewheel.min.js');
+  drupal_add_js(drupal_get_path('module', 'dexp_menu') . '/js/dexp-menu.js');
+  $items = array();
+  $menu = explode(':', variable_get('dexp_menu_menu_' . $number, 'main-menu:0'));
+  $tree = menu_tree_all_data($menu[0]);
+  $menu_tree = _dexp_menu_submenu_tree_all_data($tree, $menu[1]);
+  $menu_tree = menu_tree_output($menu_tree);
+  $output = render($menu_tree);
+  $id = 1;
+  $block = array(
+      'subject' => '',
+      'content' => array(
+          '#type' => 'markup',
+          '#markup' => theme('dexp_menu', array('output' => $output)),
+          '#contextual_links' => array(
+              'contextual_links_example' => array(
+                  'examples/contextual-links',
+                  array($id),
+              ),
+          ),
+      ),
+  );
+  return $block;
+}
+
+function _dexp_menu_submenu_tree_all_data($tree, $plid = 0) {
+  if ($plid == 0)
+    return $tree;
+  $ret = array();
+  foreach ($tree as $branch) {
+    if ($branch['link']['mlid'] == $plid) {
+      $ret = $branch['below'];
+      return $ret;
+      break;
+    } elseif (is_array($branch['below'])) {
+      $ret = _dexp_menu_submenu_tree_all_data($branch['below'], $plid);
+      if (!empty($ret))
+        return $ret;
+    }
+  }
+  return $ret;
+}
+
+function dexp_menu_form_menu_edit_item_alter(&$form, &$form_state) {
+  if (isset($form['mlid']['#value'])) {
+    $options = unserialize(db_query('SELECT options FROM {menu_links} WHERE mlid = :mlid', array(':mlid' => $form['mlid']['#value']))->fetchField());
+  }
+  if (!isset($options['link_icon'])) {
+    $options['link_icon'] = '';
+  }
+  $form['options']['link_icon'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Link icon'),
+      '#default_value' => $options['link_icon'],
+  );
+}
+
+function dexp_menu_menu_link_alter(&$item) {
+  if (isset($item['link_icon'])) {
+    $item['options']['link_icon'] = $item['link_icon'];
+  }
+}
+
+function dexp_menu_link(&$variables){
+    if(substr($variables['path'], 0,11) == '<container>'){
+        if(arg(0)=='admin' && arg(1)=='structure' && arg(2) == 'menu'){
+            return '[Container]';
+        }
+        return '';
+    }
+    if ($variables['path'] == '<row>') {
+        if(arg(0)=='admin' && arg(1)=='structure' && arg(2) == 'menu'){
+            return '[Row]';
+        }
+        return '';
+    }
+    if (substr($variables['path'], 0,5) == '<col>') {
+        if(arg(0)=='admin' && arg(1)=='structure' && arg(2) == 'menu'){
+            return '[Col] '.$variables['text'];
+        }
+        return '';
+    }
+    return theme('dexp_menu_link_default',$variables);
+}
+
+function dexp_menu_menu_link(&$variables){
+    $element = $variables['element'];
+    if(substr($element['#href'], 0,11) == '<container>'){
+       return theme('dexp_menu_container', $variables);
+    }
+    if($element['#href'] == '<row>'){
+       return theme('dexp_menu_row', $variables);
+    }
+    if(substr($element['#href'], 0,5) == '<col>'){
+       return theme('dexp_menu_col', $variables);
+    }
+    
+    ////
+    
+    $icon = "";
+    if(isset($element['#localized_options']['link_icon']) && !empty($element['#localized_options']['link_icon'])){
+        $element['#title'] = '<i class="fa '.$element['#localized_options']['link_icon'].'"></i> '.$element['#title'];
+        $element['#localized_options']['html'] = true;
+    }
+    $sub_menu = '';
+
+    if ($element['#below']) {
+        $sub_menu = drupal_render($element['#below']);
+        preg_match('/<!--begin-->(.*?)<!--end-->/is', $sub_menu, $match);
+        if(isset($match[1])) $sub_menu = $match[1];
+    }
+    if(substr($element['#href'], 0,11) == '<container>'){
+       $cols = explode('/', $element['#href']);
+       $element['#attributes']['class'][] = 'container';
+    }
+    if($element['#href'] == '<row>'){
+       $element['#attributes']['class'][] = 'row';
+    }
+    if(substr($element['#href'], 0,5) == '<col>'){
+       $cols = explode('/', $element['#href']);
+       $element['#attributes']['data-col'] = 'col-lg-'.$cols[1];
+    }
+    $output = l($element['#title'], $element['#href'], $element['#localized_options']);
+    return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ *
+ * Intercepts hook_link().
+ */
+function dexp_menu_theme_registry_alter(&$registry) {
+  // Save previous value from registry in case another module/theme
+  // overwrites link.
+  $registry['dexp_menu_link_default'] = $registry['link'];
+  $registry['link']['function'] = 'dexp_menu_link';
+  $registry['dexp_menu_menu_link_default'] = $registry['menu_link'];
+  $registry['menu_link']['function'] = 'dexp_menu_menu_link';
+}

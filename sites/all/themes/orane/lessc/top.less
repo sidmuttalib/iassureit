@@ -1,0 +1,119 @@
+#section-top {
+    line-height:40px;
+    //border-bottom: 1px solid #e8e8e8;
+    color: #808080;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.05);
+    //box-shadow: 0 3px 6px 0 rgba(50, 50, 50, 0.75);
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    position: relative;
+    .region-top-left{
+        ul.hotline{
+            margin: 0;
+            padding: 0;
+            li{
+                display: inline-block;
+                &:not(:first-child){
+                    &:before{
+                        content: "|";
+                        padding: 0 10px;
+                        color: #EEEEEE;
+                    }
+                }
+                a {
+                  color: #8c8c8c;
+                  &:hover {
+                    color: @base_color;
+                  }
+                }
+            }
+        }
+    }
+    .region-top-right{
+        text-align: right;
+        a,i {
+          color: #8c8c8c;
+          font-weight:200;
+          &:hover {
+            color: @base_color;
+          }
+        }
+        .block{
+            display: inline-block;
+            &.block-search{
+                width: 30px;
+                text-align: right;
+            }
+            &.block-menu{
+                ul.menu{
+                    li{
+                        display: inline-block;
+                        margin: 0;
+                        padding:0;
+                        &:not(:first-child){
+                            &:before{
+                                content: "|";
+                                padding: 0 10px;
+                                color: #EEEEEE;
+                            }
+                        }
+                        &:last-child{
+                            &:after{
+                                content: "|";
+                                padding: 0 10px;
+                                color: #EEEEEE;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+/*===========SEARCH================*/
+.region-search{
+    text-align:center;
+    .search-toggle{
+        color: @base_color;
+        cursor: pointer;
+    }
+    .search-form-block-wrapper{
+        overflow: visible !important;
+        display: none;
+        position: absolute;
+        width: 250px;
+        background: #fff;
+        z-index: 999;
+        right:0;
+        border-top: 6px solid @base_color;
+        box-shadow:0px 3px 5px 0px gray;
+        .form-item{
+            padding: 5px 10px 10px;
+            margin: 0;
+            input[type=text]{
+                margin: 0;
+                &:focus{
+                    outline:0px !important;
+                    -webkit-appearance:none !important;
+                }
+            }
+        }
+    }
+    &.open{
+        .search-form-block-wrapper{
+            display: block;
+        }
+        &:before{
+            position: absolute;
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: @base_color;
+            .transform-rotate(45deg);
+            left: 50%;
+            bottom: -4px;
+            margin-left: -5px;
+        }
+    }
+}

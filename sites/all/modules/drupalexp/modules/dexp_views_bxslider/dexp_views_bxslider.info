@@ -1,0 +1,10 @@
+name = Dexp Views BXSlider
+description = "Show views content as BXSlider format."
+core = 7.x
+package = DrupalExp
+
+dependencies[] = libraries
+dependencies[] = views
+
+files[] = dexp_views_bxslider.theme.inc
+files[] = dexp_views_bxslider_plugin_style_bxslider.inc

@@ -1,0 +1,12 @@
+p:empty{
+	margin: 0;
+}
+.dexp-gmap-shortcode img{
+	max-width:none !important;
+}
+.dexp-gmap-shortcode label {
+	width: auto; display:inline;
+}
+.dexp-gmap-shortcode img.img-responsive{
+	max-width: 100px !important;
+}

@@ -1,0 +1,287 @@
+<?php
+
+function dexp_portfolio_install() {
+  // Make sure a testimonial content type doesn't already exist
+  if (!in_array('dexp_portfolio', node_type_get_names())) {
+    // Content type
+    $type = array(
+        'type' => 'dexp_portfolio',
+        'name' => t('Portfolio'),
+        'base' => 'node_content',
+        'description' => '',
+        'has_title' => '1',
+        'title_label' => t('Title'),
+        'help' => '',
+    );
+    $type = node_type_set_defaults($type);
+    node_type_save($type);
+    node_add_body_field($type);
+    // Vocabulary
+    $machine_name = 'portfolio_category';
+    $help = t('Enter a comma-separated list of words to describe your content.');
+    if (!taxonomy_vocabulary_machine_name_load($machine_name)) {
+      $vocabulary = (object) array(
+                  'name' => t('Portfolio Category'),
+                  'description' => t('List of categories used to filter the portfolio'),
+                  'machine_name' => $machine_name,
+                  'help' => $help
+      );
+      taxonomy_vocabulary_save($vocabulary);
+    }
+    // Fields
+    $fields = array(
+        'field_portfolio_images' => array(
+            'field_name' => 'field_portfolio_images',
+            'type' => 'image',
+            'cardinality' => FIELD_CARDINALITY_UNLIMITED
+        ),
+        'field_portfolio_categories' => array(
+            'field_name' => 'field_portfolio_categories',
+            'type' => 'taxonomy_term_reference',
+            'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+            'settings' => array(
+                'allowed_values' => array(
+                    array(
+                        'vocabulary' => 'portfolio_category',
+                        'parent' => '0',
+                    ),
+                ),
+            ),
+        ),
+				'field_portfolio_url' => array(
+						'field_name' => 'field_portfolio_url',
+						'type' => 'text',
+						'cardinality' => 1,
+						'settings' => array(
+								'max_length' => 255,
+						),
+				),
+    );
+    foreach ($fields as $field) {
+      field_create_field($field);
+    }
+
+    foreach (_dexp_portfolio_field_instances() as $instance) {
+      $instance['entity_type'] = 'node';
+      $instance['bundle'] = 'dexp_portfolio';
+			$field_instance = field_info_instance($instance['entity_type'], $instance['field_name'], $instance['bundle']);
+			if($field_instance){
+				field_update_instance($instance);
+			}else{
+				field_create_instance($instance);
+			}
+    }
+  }
+}
+
+function _dexp_portfolio_field_instances() {
+  $field_instances = array();
+	// Exported field_instance: 'node-dexp_portfolio-body'
+  $field_instances['node-dexp_portfolio-body'] = array(
+    'bundle' => 'dexp_portfolio',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'dexp_portfolio' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'trim_length' => 30,
+        ),
+        'type' => 'text_trimmed',
+        'weight' => 1,
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'trim_length' => 600,
+        ),
+        'type' => 'text_summary_or_trimmed',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'body',
+    'label' => 'Body',
+    'required' => FALSE,
+    'settings' => array(
+      'display_summary' => TRUE,
+      'text_processing' => 1,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 20,
+        'summary_rows' => 5,
+      ),
+      'type' => 'text_textarea_with_summary',
+      'weight' => -4,
+    ),
+  );
+  // Exported field_instance: 'node-portfolio-field_portfolio_categories'
+  $field_instances['node-portfolio-field_portfolio_categories'] = array(
+      'bundle' => 'dexp_portfolio',
+      'default_value' => array(),
+      'deleted' => 0,
+      'description' => '',
+      'display' => array(
+          'default' => array(
+						'label' => 'hidden',
+						'module' => 'taxonomy',
+						'settings' => array(),
+						'type' => 'taxonomy_term_reference_plain',
+						'weight' => 2,
+					),
+          'dexp_portfolio' => array(
+              'label' => 'above',
+              'settings' => array(),
+              'type' => 'hidden',
+              'weight' => 2,
+          ),
+          'teaser' => array(
+              'label' => 'above',
+              'settings' => array(),
+              'type' => 'hidden',
+              'weight' => 0,
+          ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_portfolio_categories',
+      'label' => 'Categories',
+      'required' => 1,
+      'settings' => array(
+          'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+          'active' => 1,
+          'module' => 'options',
+          'settings' => array(),
+          'type' => 'options_buttons',
+          'weight' => 1,
+      ),
+  );
+
+  // Exported field_instance: 'node-portfolio-field_portfolio_images'
+  $field_instances['node-portfolio-field_portfolio_images'] = array(
+      'bundle' => 'dexp_portfolio',
+      'deleted' => 0,
+      'description' => '',
+      'display' => array(
+          'default' => array(
+              'label' => 'hidden',
+              'module' => 'image',
+              'settings' => array(
+                  'field_formatter_class' => '',
+                  'image_link' => '',
+                  'image_style' => '',
+              ),
+              'type' => 'image',
+              'weight' => 0,
+          ),
+          'dexp_portfolio' => array(
+              'label' => 'hidden',
+              'module' => 'image',
+              'settings' => array(
+                  'field_formatter_class' => '',
+                  'image_link' => '',
+                  'image_style' => 'portfolio',
+              ),
+              'type' => 'image',
+              'weight' => 0,
+          ),
+          'teaser' => array(
+              'label' => 'above',
+              'settings' => array(),
+              'type' => 'hidden',
+              'weight' => 0,
+          ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_portfolio_images',
+      'label' => 'Images',
+      'required' => 0,
+      'settings' => array(
+          'alt_field' => 0,
+          'default_image' => 0,
+          'file_directory' => '',
+          'file_extensions' => 'png gif jpg jpeg',
+          'max_filesize' => '',
+          'max_resolution' => '',
+          'min_resolution' => '',
+          'title_field' => 0,
+          'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+          'active' => 1,
+          'module' => 'image',
+          'settings' => array(
+              'preview_image_style' => 'thumbnail',
+              'progress_indicator' => 'throbber',
+          ),
+          'type' => 'image_image',
+          'weight' => 3,
+      ),
+  );
+	// Exported field_instance: 'node-dexp_portfolio-field_portfolio_url'
+	$field_instances['node-dexp_portfolio-field_portfolio_url'] = array(
+    'bundle' => 'dexp_portfolio',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'dexp_portfolio' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_portfolio_url',
+    'label' => 'Project Url',
+    'required' => 0,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 4,
+    ),
+  );
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('About Project');
+  t('Categories');
+  t('Images');
+	t('Project Url');
+  return $field_instances;
+}

@@ -1,0 +1,68 @@
+body.rtl{
+  direction: rtl;
+}
+body.rtl #admin-menu{
+  direction: ltr;
+}
+body.rtl .col-xs-1,
+body.rtl .col-xs-2,
+body.rtl .col-xs-3,
+body.rtl .col-xs-4,
+body.rtl .col-xs-5,
+body.rtl .col-xs-6,
+body.rtl .col-xs-7,
+body.rtl .col-xs-8,
+body.rtl .col-xs-9,
+body.rtl .col-xs-10,
+body.rtl .col-xs-11,
+body.rtl .col-xs-12,
+body.rtl .col-sm-1,
+body.rtl .col-sm-2,
+body.rtl .col-sm-3,
+body.rtl .col-sm-4,
+body.rtl .col-sm-5,
+body.rtl .col-sm-6,
+body.rtl .col-sm-7,
+body.rtl .col-sm-8,
+body.rtl .col-sm-9,
+body.rtl .col-sm-10,
+body.rtl .col-sm-11,
+body.rtl .col-sm-12,
+body.rtl .col-md-1,
+body.rtl .col-md-2,
+body.rtl .col-md-3,
+body.rtl .col-md-4,
+body.rtl .col-md-5,
+body.rtl .col-md-6,
+body.rtl .col-md-7,
+body.rtl .col-md-8,
+body.rtl .col-md-9,
+body.rtl .col-md-10,
+body.rtl .col-md-11,
+body.rtl .col-md-12,
+body.rtl .col-lg-1,
+body.rtl .col-lg-2,
+body.rtl .col-lg-3,
+body.rtl .col-lg-4,
+body.rtl .col-lg-5,
+body.rtl .col-lg-6,
+body.rtl .col-lg-7,
+body.rtl .col-lg-8,
+body.rtl .col-lg-9,
+body.rtl .col-lg-10,
+body.rtl .col-lg-11,
+body.rtl .col-lg-12{
+  float: right;
+}
+body.rtl .bx-wrapper .bx-viewport{
+  direction: ltr;
+}
+body.rtl .bx-wrapper .bx-viewport .bxslider-item {
+  direction: rtl;
+}
+body.rtl .pull-right {
+    float: left !important;
+}
+body.rtl .pull-letf {
+    float: right !important;
+}

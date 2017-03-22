@@ -1,0 +1,119 @@
+<?php
+
+function dexp_quicksettings_menu() {
+  $items = array();
+  $items['drupalexp/settings/%/%/%'] = array(
+      'page callback' => 'dexp_quicksettings_settings',
+      'page arguments' => array(2,3,4),
+      'access arguments' => array('access content'),
+  );
+  $items['drupalexp/preset/%'] = array(
+      'page callback' => 'dexp_quicksettings_preset',
+      'page arguments' => array(2),
+      'access arguments' => array('access content'),
+  );
+  $items['drupalexp/direction/%'] = array(
+      'page callback' => 'dexp_quicksettings_direction',
+      'page arguments' => array(2),
+      'access arguments' => array('access content'),
+  );
+  $items['drupalexp/layout/%'] = array(
+      'page callback' => 'dexp_quicksettings_layout',
+      'page arguments' => array(2),
+      'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+function dexp_quicksettings_settings($preset, $direction, $layout) {
+  if (!empty($preset)) {
+    $_SESSION['drupalexp_default_preset'] = $preset - 1;
+  }
+  if ($direction == 'rtl' || $direction == 'ltr') {
+    $_SESSION['drupalexp_default_direction'] = $direction;
+  }
+  if ($layout == 'wide' || $layout == 'boxed') {
+    $_SESSION['drupalexp_layout'] = $layout;
+  }
+  $destination = isset($_GET['destination'])?$_GET['destination']:'<front>';
+  drupal_goto($destination);
+}
+
+function dexp_quicksettings_preset($preset) {
+  if (!empty($preset)) {
+    $_SESSION['drupalexp_default_preset'] = $preset - 1;
+  }
+  $destination = isset($_GET['destination'])?$_GET['destination']:'<front>';
+  drupal_goto($destination);
+}
+
+function dexp_quicksettings_direction($direction) {
+  if ($direction == 'rtl' || $direction == 'ltr') {
+    $_SESSION['drupalexp_default_direction'] = $direction;
+  }
+  $destination = isset($_GET['destination'])?$_GET['destination']:'<front>';
+  drupal_goto($destination);
+}
+
+function dexp_quicksettings_layout($layout) {
+  if ($layout == 'wide' || $layout == 'boxed') {
+    $_SESSION['drupalexp_layout'] = $layout;
+  }
+  $destination = isset($_GET['destination'])?$_GET['destination']:'<front>';
+  drupal_goto($destination);
+}
+
+function dexp_quicksettings_block_info() {
+  $blocks['dexp_quicksettings'] = array(
+      'info' => t('Theme Quick Settings'),
+      'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+function dexp_quicksettings_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'dexp_quicksettings':
+      $block['subject'] = t('Theme Quick Settings');
+      $block['content'] = theme('dexp_quicksettings', array(
+          'presets' => dexp_quicksettings_presets()
+      ));
+      return $block;
+      break;
+  }
+}
+
+function dexp_quicksettings_theme() {
+  $path = drupal_get_path('module', 'dexp_quicksettings');
+  $themes['dexp_quicksettings'] = array(
+      'template' => 'quicksettings',
+      'path' => $path,
+      'pattern' => 'block__',
+      'preprocess functions' => array(
+          'template_preprocess',
+          'dexp_quicksettings_preprocess_quicksettings_block'
+      ),
+      'variables' => array(
+          'title' => '',
+          'border' => 'none',
+          'background' => 'no',
+          'align' => 'center',
+          'icon' => '',
+          'content' => '',
+      )
+  );
+  return $themes;
+}
+
+function dexp_quicksettings_preprocess_quicksettings_block(&$vars) {
+  
+}
+
+function dexp_quicksettings_presets() {
+  $presets = theme_get_setting('drupalexp_presets', variable_get('theme_default', NULL));
+  if ($presets) {
+    return json_decode(base64_decode($presets));
+  }
+  return array();
+}

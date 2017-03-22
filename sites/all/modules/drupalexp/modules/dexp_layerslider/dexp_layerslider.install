@@ -1,0 +1,20 @@
+<?php
+
+function dexp_layerslider_install() {
+  $data_type = Database::getConnection()->databaseType();
+  switch ($data_type) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE IF NOT EXISTS {dexp_layerslider} (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `name` varchar(255) NOT NULL,
+                `settings` text NOT NULL,
+                `data` longtext NOT NULL,
+                PRIMARY KEY (`id`)
+              ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+              ");
+      break;
+    case 'pgsql':
+      break;
+  }
+}

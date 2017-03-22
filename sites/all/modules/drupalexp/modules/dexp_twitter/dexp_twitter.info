@@ -1,0 +1,10 @@
+name = Dexp Twitter
+description = "Show Twitter feed base on API ver 1.1."
+core = 7.x
+package = DrupalExp
+
+dependencies[] = block
+dependencies[] = libraries
+
+version = "7.x-1.0"
+core = "7.x"

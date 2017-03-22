@@ -1,0 +1,32 @@
+.bannercontainer {
+    background-color: #FFFFFF;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    position: relative;
+    width: 1120px;
+}
+/*
+div[class^=dexp_layerslider_wapper_]{
+  padding:0px;
+  background-color:#fff;
+  position:relative;
+  position:relative;
+  margin-left:auto;
+  margin-right:auto;
+}
+div[id^=dexp_layerslider]{
+  position:relative;
+  overflow:hidden;
+}
+THE MEDIA CHOOSER TO SET DIFFERENT SIZES OF THE CONTAINER DEPENDING ON THE SCREEN SIZE
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+  div[id^=dexp_layerslider], div[class^=dexp_layerslider_wapper_]			{	width:760px; height:395px;}
+}
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  div[id^=dexp_layerslider], div[class^=dexp_layerslider_wapper_]		{	width:480px; height:250px;	}
+}
+@media only screen and (min-width: 0px) and (max-width: 479px) {
+  div[id^=dexp_layerslider], div[class^=dexp_layerslider_wapper_]		{	width:320px;height:166px;	}
+}
+*/

@@ -1,0 +1,60 @@
+/*
+Add your custom css here. Do not touch on style-color-name.css files
+*/
+.box-title a { 
+	color:#444444 !important
+	}
+#section-header .site-logo img {
+	width: 125px !important;
+
+}
+.hotline ul li { 
+	display: inline-block;
+	}
+.mobslide {
+	font-family: 'Lato' !important;
+	font-size:2em !important;
+	color: #198dc7;
+	 font-weight: 300 !important;
+}
+.mobslide-h {
+	font-family: 'Lato' !important;
+	font-size:4.5em !important;
+	color:#007CC4 !important;
+	 font-weight: 300 !important;
+}
+.mobslide-hwhite {
+	font-family: 'Lato' !important;
+	font-size:4.5em !important;
+	color:#fff !important;
+	 font-weight: 300 !important;
+}
+
+.mobslide-white {
+	font-family: 'Lato' !important;
+	font-size:2em !important;
+	color:#efefef !important;
+	 font-weight: 300 !important;
+}
+.moving-zone .popup h2{
+	font-size:25px;
+	}
+#block-block-112, 
+#block-block-118,
+#block-block-124,
+#block-block-117,
+#block-block-116 {
+	  padding: 35px 0 0 0;
+}
+#section-page-title {
+
+ margin-bottom: 0px !important;
+}
+
+#block-block-47 { padding: 0 !important}
+
+.page-node-110 .region-user-00 { background: #ccc; }
+
+.page-node-110 .dexp-grid-item.col-lg-3.col-md-3.col-sm-6.col-xs-12 { width: 25% !important; left: 0 !important; position:inherit !important; }
+
+

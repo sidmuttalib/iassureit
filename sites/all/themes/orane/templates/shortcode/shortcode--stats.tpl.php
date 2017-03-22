@@ -1,0 +1,1 @@
+<div id ="<?php print $stats_id; ?>" class="milestone-counter <?php if ($class) print $class; ?>"><?php if ($icon): ?><div class="milestone-icon"><i class="<?php print $icon; ?>"></i> </div><?php endif; ?><div class="milestone-details"><span class="stat-count highlight"><?php print $number; ?></span> - <?php print $content; ?></div></div>

@@ -1,0 +1,14 @@
+.dexp-masonry{
+  position: relative;
+}
+.dexp-masonry-item{
+  /*overflow: hidden;*/
+}
+.dexp-masonry-item > div.ui-resizable-handle.ui-icon{
+  background-color: rgba(255,255,255,0.6);
+}
+.dexp-masonry-item > div:not(.ui-resizable-handle){
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}

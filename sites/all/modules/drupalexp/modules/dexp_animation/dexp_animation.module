@@ -1,0 +1,510 @@
+<?php
+
+/**
+ * Implement hook_menu().
+ */
+function dexp_animation_menu() {
+  $items = array();
+  $items['admin/drupalexp/dexp_animation'] = array(
+      'title' => t('Animation settings'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('dexp_animation_admin_settings'),
+      'access arguments' => array('administer onthisdate settings'),
+      'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function dexp_animation_admin_settings() {
+  $form['dexp_animation_pages_init_action'] = array(
+      '#type' => 'radios',
+      '#title' => t('Enable animate on specific pages '),
+      '#options' => array(
+          'page_enable' => t('Load only on the listed pages.'),
+          'page_disable' => t('Load on every page except the listed pages.')
+      ),
+      '#default_value' => variable_get('dexp_animation_pages_init_action', 'page_disable'),
+  );
+  $form['dexp_animation_pages_list'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Pages'),
+      '#description' => t('List one page per line as Drupal paths.  The * character is a wildcard.  Example paths are "node/add/page" and "node/add/*".  Use <front> to match the front page.'),
+      '#default_value' => variable_get('dexp_animation_pages_list', '')
+  );
+  return system_settings_form($form);
+}
+
+/*
+ * Implement hook_init().
+ */
+
+function dexp_animation_init() {
+  if (dexp_animation_exclude_these_paths() != 1) {
+    $module_path = drupal_get_path('module', 'dexp_animation');
+    $library = libraries_get_libraries();
+    if (isset($library['appear'])) {
+      $path = $library['appear'];
+      drupal_add_js($path . '/jquery.appear.js');
+      drupal_add_js($module_path . '/js/dexp_animation.js');
+      drupal_add_css($module_path . '/css/animate.css');
+    }
+  }
+}
+
+/**
+ * Return TRUE if current path is disabled for animate
+ */
+function dexp_animation_exclude_these_paths() {
+  $action = variable_get('dexp_animation_pages_init_action', 'page_disable');
+  $page_list = variable_get('dexp_animation_pages_list', '');
+
+  if (!empty($page_list)) {
+    // Retrieve Drupal alias for the current path (if exists).
+    $alias = drupal_get_path_alias($_GET['q']);
+
+    if (drupal_match_path($_GET['q'], $page_list) || drupal_match_path($alias, $page_list)) {
+      return ($action == 'page_disable' ? 1 : 0);
+    }
+  }
+
+  return ($action == 'page_disable' ? 0 : 1);
+}
+
+/*
+ * Implement hook_form_alter()
+ */
+
+function dexp_animation_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'block_admin_configure' || $form_id == 'block_add_block_form') {
+    $form['dexp_block_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'DrupalExp Block Settings',
+        '#weight' => 0,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+    );
+    $form['dexp_block_settings']['dexp_animation'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Block Animation',
+        '#weight' => 0,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+    );
+    $form['dexp_block_settings']['dexp_animation']['dexp_animate'] = array(
+        '#type' => 'select',
+        '#title' => t('Appears animate'),
+        '#options' => _dexp_animation_animations(),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_animate'),
+    );
+    $form['dexp_block_settings']['dexp_animation']['background_type'] = array(
+        '#type' => 'select',
+        '#title' => t('Background type'),
+        '#options' => array(0=>'None',1=>'Color',2=>'Image',3=>'Video'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'background_type'),
+    );
+    $form['dexp_block_settings']['dexp_animation']['background_color'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Background Color'),
+        '#states' => array(
+            'visible' => array(
+                ':input[name="background_type"]' => array('value' => 1),
+            ),
+        ),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'background_color'),
+    );
+    $form['dexp_block_settings']['dexp_animation']['dexp_block_background_image'] = array(
+        '#tree' => TRUE,
+        '#title' => t('Background image'),
+        '#type' => 'media',
+        '#description' => t('The uploaded image will be displayed on the page unless it is marked as "removed".'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_background_image'),
+        '#media_options' => array(
+            'global' => array(
+                'types' => array(
+                    'image' => 'image',
+                ),
+                'schemes' => array(
+                    'public' => 'public',
+                ),
+                'file_extensions' => 'png gif jpg jpeg',
+                'max_filesize' => '1 MB',
+                'uri_scheme' => 'public',
+            ),
+        ),
+        '#states' => array(
+            'visible' => array(
+                ':input[name="background_type"]' => array('value' => 2),
+            ),
+        ),
+    );
+    $form['dexp_block_settings']['dexp_animation']['dexp_block_background_image_type'] = array(
+        '#type' => 'select',
+        '#title' => t('Background image type'),
+        '#options' => array('default' => 'Default', 'parallax' => 'Parallax', 'cover'=>'Cover'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_background_image_type'),
+        '#states' => array(
+            'visible' => array(
+                ':input[name="background_type"]' => array('value' => 2),
+            ),
+        ),
+    );
+    $form['dexp_block_settings']['dexp_animation']['dexp_block_background_image_ratio'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Background Parallax ratio'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_background_image_ratio',0.7),
+        '#states' => array(
+            'visible' => array(
+                ':input[name="background_type"]' => array('value' => 2),
+                ':input[name="dexp_block_background_image_type"]' => array('value' => 'parallax'),
+            ),
+        ),
+    );
+    $form['dexp_block_settings']['dexp_animation']['dexp_block_background_video'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Background Video URL'),
+        '#description' => t('Support youtube video'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_background_video'),
+        '#states' => array(
+            'visible' => array(
+                ':input[name="background_type"]' => array('value' => 3),
+            ),
+        ),
+    );
+    $form['dexp_block_settings']['dexp_animation']['dexp_block_background_video_start'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Start at'),
+        '#field_suffix' => t('second'),
+        '#description' => t('Start video at time'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_background_video_start'),
+        '#states' => array(
+            'visible' => array(
+                ':input[name="background_type"]' => array('value' => 3),
+            ),
+        ),
+    );
+    $form['dexp_block_settings']['dexp_animation']['dexp_block_background_video_mute'] = array(
+        '#type' => 'select',
+        '#title' => t('Mute'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_background_video_mute'),
+        '#options' => array('0'=>'No',1=>'Yes'),
+        '#states' => array(
+            'visible' => array(
+                ':input[name="background_type"]' => array('value' => 3),
+            ),
+        ),
+    );
+    $form['dexp_block_settings']['dexp_custom_style'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Block Custom Style'),
+        '#weight' => 1,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+    );
+    $form['dexp_block_settings']['dexp_custom_style']['dexp_block_text_align'] = array(
+        '#type' => 'select',
+        '#title' => t('Text align'),
+        '#options' => array('default' => 'Default', 'left' => 'Left', 'center' => 'Center', 'right' => 'Right'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_text_align'),
+    );
+    $form['dexp_block_settings']['dexp_custom_style']['dexp_block_padding'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Padding'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_padding'),
+    );
+    $form['dexp_block_settings']['dexp_custom_style']['dexp_block_margin'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Margin'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_margin'),
+    );
+    $form['dexp_block_settings']['dexp_custom_style']['dexp_block_content_class'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Custom block content class'),
+        '#default_value' => _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_content_class'),
+    );
+    $form['dexp_block_settings']['dexp_responsive_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Block Responsive Settings'),
+        '#weight' => 2,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+    );
+    $form['dexp_block_settings']['dexp_responsive_settings']['dexp_block_responsive'] = array(
+        '#type' => 'checkboxes',
+        '#title' => 'Responsive settings',
+        '#options' => array(
+            'hphone' => 'Hidden on Phone',
+            'vphone' => 'Visible on Phone',
+            'htablet' => 'Hidden on Tablet',
+            'vtablet' => 'Visible on Tablet',
+            'hdesktop' => 'Hidden on Desktop',
+            'vdesktop' => 'Visible on Desktop'
+        ),
+        '#default_value' => (_dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_responsive')) ? _dexp_animation_variable_get($form['module']['#value'], $form['delta']['#value'], 'dexp_block_responsive') : array(),
+    );
+    $form['#submit'][] = 'dexp_animation_block_configure_form_submit';
+  }
+}
+
+function dexp_animation_block_configure_form_submit($form, $form_state) {
+  $values = $form_state['values'];
+  if ($values['dexp_animate']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_animate', $values['dexp_animate']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_animate', NULL);
+  }
+  if ($values['dexp_block_background_image']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_image', $values['dexp_block_background_image']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_image', NULL);
+  }
+  if ($values['dexp_block_background_video']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_video', $values['dexp_block_background_video']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_video', NULL);
+  }
+  if ($values['dexp_block_background_video_start']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_video_start', $values['dexp_block_background_video_start']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_video_start', NULL);
+  }
+  if ($values['dexp_block_background_image_type']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_image_type', $values['dexp_block_background_image_type']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_image_type', NULL);
+  }
+  if ($values['dexp_block_text_align']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_text_align', $values['dexp_block_text_align']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_text_align', NULL);
+  }
+  if ($values['dexp_block_padding']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_padding', $values['dexp_block_padding']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_padding', NULL);
+  }
+  if ($values['dexp_block_margin']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_margin', $values['dexp_block_margin']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_margin', NULL);
+  }
+  if ($values['dexp_block_content_class']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_content_class', $values['dexp_block_content_class']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_content_class', NULL);
+  }
+  if ($values['dexp_block_responsive']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_responsive', $values['dexp_block_responsive']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_responsive', NULL);
+  }
+  if ($values['dexp_block_background_image_ratio']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_image_ratio', $values['dexp_block_background_image_ratio']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_image_ratio', NULL);
+  }
+  if ($values['background_type']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'background_type', $values['background_type']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'background_type', NULL);
+  }
+  if ($values['background_color']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'background_color', $values['background_color']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'background_color', NULL);
+  }
+  if ($values['dexp_block_background_video_mute']) {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_video_mute', $values['dexp_block_background_video_mute']);
+  } else {
+    _dexp_animation_variable_set($values['module'], $values['delta'], 'dexp_block_background_video_mute', NULL);
+  }
+}
+
+function dexp_animation_preprocess_block(&$vars) {
+  $module_path = drupal_get_path('module', 'dexp_animation');
+  $vars['content_attributes_array']['class'][] = 'content';
+  $block = $vars['elements']['#block'];
+  $module = $block->module;
+  $delta = $block->delta;
+  $background_type = _dexp_animation_variable_get($module, $delta, 'background_type');
+  $background_color = _dexp_animation_variable_get($module, $delta, 'background_color');
+  $animate = _dexp_animation_variable_get($module, $delta, 'dexp_animate');
+  $separator = variable_get('dexp_page_title_separator', '~');
+  //$subtitle = _dexp_animation_variable_get($module, $delta, 'dexp_block_subtitle');
+  $titles = explode($separator, $vars['block']->subject,2);
+  $vars['block']->subject = $titles[0];
+  $subtitle = isset($titles[1])?htmlspecialchars_decode($titles[1]):'';
+  $vars['block']->title = theme('dexp_block_title', array('title' => $vars['block']->subject, 'subtitle' => $subtitle, 'classes' => $vars['classes_array']));
+  $background_image = _dexp_animation_variable_get($module, $delta, 'dexp_block_background_image');
+  $background_video = _dexp_animation_variable_get($module, $delta, 'dexp_block_background_video');
+  $background_video_start = _dexp_animation_variable_get($module, $delta, 'dexp_block_background_video_start');
+  $background_image_type = _dexp_animation_variable_get($module, $delta, 'dexp_block_background_image_type');
+  $text_align = _dexp_animation_variable_get($module, $delta, 'dexp_block_text_align');
+  $padding = _dexp_animation_variable_get($module, $delta, 'dexp_block_padding');
+  $margin = _dexp_animation_variable_get($module, $delta, 'dexp_block_margin');
+  $content_class = _dexp_animation_variable_get($module, $delta, 'dexp_block_content_class');
+  $parallax_ratio = _dexp_animation_variable_get($module, $delta, 'dexp_block_background_image_ratio',0.5);
+  $mute = _dexp_animation_variable_get($module, $delta, 'dexp_block_background_video_mute',0);
+  if (!empty($content_class)) {
+    $vars['content_attributes_array']['class'][] = $content_class;
+  }
+  $responsive = _dexp_animation_variable_get($module, $delta, 'dexp_block_responsive');
+  if ($animate != NULL) {
+    $library = libraries_get_libraries();
+    if (isset($library['appear'])) {
+      $path = $library['appear'];
+      drupal_add_js($path . '/jquery.appear.js');
+      drupal_add_js($module_path . '/js/dexp_animation.js');
+      drupal_add_css($module_path . '/css/animate.css');
+    }
+    $vars['classes_array'][] = 'dexp-animate';
+    $vars['attributes_array']['data-animate'] = $animate;
+  }
+  if (!empty($responsive)) {
+    //foreach($responsive as $device){
+    if ($responsive['hphone']) {
+      $vars['classes_array'][] = 'hidden-xs';
+    }
+    if ($responsive['vphone']) {
+      $vars['classes_array'][] = 'visible-xs';
+    }
+    if ($responsive['htablet']) {
+      $vars['classes_array'][] = 'hidden-sm';
+    }
+    if ($responsive['vtablet']) {
+      $vars['classes_array'][] = 'visible-sm';
+    }
+    if ($responsive['hdesktop']) {
+      $vars['classes_array'][] = 'hidden-md';
+      $vars['classes_array'][] = 'hidden-lg';
+    }
+    if ($responsive['vdesktop']) {
+      $vars['classes_array'][] = 'visible-md';
+      $vars['classes_array'][] = 'visible-lg';
+    }
+    //}
+  }
+  $styles = array();
+  if (!empty($text_align) && $text_align != 'default') {
+    $styles[] = 'text-align:' . $text_align;
+  }
+  if ($padding) {
+    $styles[] = 'padding:' . $padding;
+  }
+  if ($margin) {
+    $styles[] = 'padding:' . $margin;
+  }
+  if($background_type == 1){
+    if($background_color){
+        $styles[] = "background-color:{$background_color}";
+    }
+  }elseif($background_type == 2){
+    if($background_image['fid']){
+        $file = file_load($background_image['fid']);
+        $url = file_create_url($file->uri);
+        $styles[] = "background-image:url({$url})";
+        if($background_image_type == 'parallax'){
+            $vars['attributes_array']['data-background-width'] = $file->image_dimensions['width'];
+            $vars['attributes_array']['data-background-height'] = $file->image_dimensions['height'];
+            $vars['attributes_array']['data-background-ratio'] = $parallax_ratio;
+            $styles[] = "background-position:50% top";
+            $vars['classes_array'][] = 'dexp-parallax';
+            drupal_add_js($module_path . '/js/dexp_animation_parallax.js');
+        }elseif($background_image_type == 'cover'){
+            $styles[] = "background-size:cover";
+        }
+    }
+  }elseif($background_type == 3){
+    if (isset($background_video) && $background_video) {
+    	if($mute){
+    		$mute = 'true';
+    	}else{
+    		$mute = 'false';
+    	}
+        if ($background_video_start == null)
+          $background_video_start = 0;
+        $background_video_start = (int) $background_video_start;
+        drupal_add_js($module_path . '/js/jquery.mb.YTPlayer.js');
+        drupal_add_js('jQuery(document).ready(function($){$(\'.dexp_video_bg\').mb_YTPlayer();});', 'inline');
+        $vars['video_bg'] = '<a class="dexp_video_bg" data-property="{videoURL:\'' . $background_video . '\',containment:\'#' . $vars['block_html_id'] . '\',autoPlay:true,showControls:false, mute:'.$mute.', startAt:' . $background_video_start . ', opacity:1}">youtube</a>';
+      }
+  }
+  if (!empty($styles)) {
+    $vars['attributes_array']['style'] = implode(";", $styles);
+  }
+}
+
+function _dexp_animation_variable_set($module, $delta, $name, $value) {
+  variable_set($module . $delta . $name, $value);
+}
+
+function _dexp_animation_variable_get($module, $delta, $name, $default=NULL) {
+  return variable_get($module . $delta . $name, $default);
+}
+
+function _dexp_animation_animations() {
+  return array(
+      '' => 'None',
+      'flash' => 'flash',
+      'shake' => 'shake',
+      'bounce' => 'bounce',
+      'tada' => 'tada',
+      'swing' => 'swing',
+      'wobble' => 'wobble',
+      'pulse' => 'pulse',
+      'flip' => 'flip',
+      'flipInX' => 'flipInX',
+      'flipInY' => 'flipInY',
+      'fadeIn' => 'fadeIn',
+      'fadeInUp' => 'fadeInUp',
+      'fadeInDown' => 'fadeInDown',
+      'fadeInLeft' => 'fadeInLeft',
+      'fadeInRight' => 'fadeInRight',
+      'fadeInUpBig' => 'fadeInUpBig',
+      'fadeInDownBig' => 'fadeInDownBig',
+      'fadeInLeftBig' => 'fadeInLeftBig',
+      'fadeInRightBig' => 'fadeInRightBig',
+      'slideInDown' => 'slideInDown',
+      'slideInLeft' => 'slideInLeft',
+      'slideInRight' => 'slideInRight',
+      'bounceIn' => 'bounceIn',
+      'bounceInUp' => 'bounceInUp',
+      'bounceInDown' => 'bounceInDown',
+      'bounceInLeft' => 'bounceInLeft',
+      'bounceInRight' => 'bounceInRight',
+      'rotateIn' => 'rotateIn',
+      'rotateInUpLeft' => 'rotateInUpLeft',
+      'rotateInDownLeft' => 'rotateInDownLeft',
+      'rotateInUpRight' => 'rotateInUpRight',
+      'rotateInDownRight' => 'rotateInDownRight',
+      'lightSpeedIn' => 'lightSpeedIn',
+      'lightSpeedLeft' => 'lightSpeedLeft',
+      'lightSpeedRight' => 'lightSpeedRight',
+      //'hinge' => 'hinge',
+      'rollIn' => 'rollIn',
+  );
+}
+
+function dexp_animation_theme() {
+  $path = drupal_get_path('module', 'dexp_shortcodes');
+  $themes['dexp_block_title'] = array(
+      'template' => 'title',
+      //'path' => $path . '/theme',
+      'pattern' => 'block__',
+      'preprocess functions' => array(
+          'template_preprocess',
+          'dexp_animation_preprocess_block_title',
+      ),
+      'variables' => array(),
+  );
+  return $themes;
+}
+
+function dexp_animation_preprocess_block_title(&$vars) {
+  $classes = $vars['classes'];
+  $vars['theme_hook_suggestions'][] = 'block__title';
+  if (is_array($classes)) {
+    foreach($classes as $class){
+      $vars['theme_hook_suggestions'][] = 'block__title__' . $class;
+    }
+  }
+}

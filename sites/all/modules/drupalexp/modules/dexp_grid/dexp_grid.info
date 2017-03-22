@@ -1,0 +1,10 @@
+name = Dexp Bootstrap Grid
+description = "Views plugin for displaying views content in a responsive grid."
+core = 7.x
+package = DrupalExp
+
+dependencies[] = views
+dependencies[] = jquery_update
+
+files[] = dexp_grid.theme.inc
+files[] = dexp_grid_plugin_style_grid.inc

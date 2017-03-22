@@ -1,0 +1,4 @@
+<?php
+function dexp_layerslider_layer_form(){
+  //$form['basic']
+}

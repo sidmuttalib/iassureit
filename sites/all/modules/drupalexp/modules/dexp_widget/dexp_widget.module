@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * Implementation of hook_block_info()
+ */
+function dexp_widget_block_info() {
+    $blocks['widget_flickr'] = array(
+        'info' => t('Flickr Widget'),
+        'cache' => DRUPAL_NO_CACHE,
+    );
+    return $blocks;
+}
+function dexp_widget_preprocess_block(&$vars) {
+  drupal_add_css(drupal_get_path('module','dexp_widget').'/css/flickr.css');
+}
+/**
+ * Implementation of hook_block_view()
+ */
+function dexp_widget_block_view($delta = '') {
+	$block = array();
+    $block['subject'] = t('Flickr Widget');
+	$block['content'] = array(
+		'#theme' => 'widget_flickr',
+		'#settings' => array(
+			'widget_flickr_id' => variable_get('widget_flickr_id', '58969195@N02'),
+			'widget_flickr_photo_count' => variable_get('widget_flickr_photo_count', 6),
+		),
+	);
+    return $block;
+}
+/**
+ * Implementation of hook_block_configure()
+ */
+function dexp_widget_block_configure($delta = '') {
+    $form = array();
+	$form['widget_flickr_id'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Your flickr ID'),
+		'#default_value' => variable_get('widget_flickr_id', '58969195@N02'),
+		'#description' => t('Eg: 58969195@N02')
+	);
+
+	$form['widget_flickr_photo_count'] = array(
+		'#type' => 'select',
+		'#title' => t('Number of recent photos items to display'),
+		'#default_value' => variable_get('widget_flickr_photo_count', 8),
+		'#options' => drupal_map_assoc(array(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30)),
+	);
+    return $form;
+}
+
+/**
+ * Implementation of hook_block_save()
+ */
+function dexp_widget_block_save($delta = '', $edit = array()) {
+	variable_set('widget_flickr_id', $edit['widget_flickr_id']);
+	variable_set('widget_flickr_photo_count', $edit['widget_flickr_photo_count']);
+}
+
+/**
+ * Implementation of hook_theme()
+ * 
+ */
+function dexp_widget_theme($existing, $type, $theme, $path) {
+    return array(
+        'widget_flickr' => array(
+            'variables' => array('settings' => array('widget_flickr_id' => NULL, 'widget_flickr_photo_count' => NULL)),
+            'template' => 'widget_flickr'
+        ),
+    );
+}

@@ -1,0 +1,10 @@
+name = Dexp Masonry Grid
+description = "Views plugin for displaying views content in a masonry grid."
+core = 7.x
+package = DrupalExp
+
+dependencies[] = views
+dependencies[] = jquery_update
+
+files[] = dexp_masonry.views.inc
+files[] = dexp_masonry_plugin_style_masonry.inc

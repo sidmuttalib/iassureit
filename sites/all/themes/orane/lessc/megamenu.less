@@ -1,0 +1,113 @@
+.region-navigation{
+    position: static;
+}
+.block-dexp-menu{
+    position: static;
+}
+.dexp-dropdown{    
+    ul.menu{
+        ul.menu{
+            min-width: 200px;
+            >li{
+                position: relative;
+            }
+            ul.menu{
+                top:0;
+                left: 100%;
+                z-index: 1000;
+            }
+        }
+    }
+}
+////////
+@media screen and (min-width:992px){
+    body.rtl{
+        .dexp-dropdown{
+            ul.menu{
+                >li{
+                    text-align: right;
+                }
+            }
+        }
+    }
+    .dexp-dropdown{
+        
+        >ul.menu>li{
+            display: inline-block;
+            position: relative;
+            >.dexp-menu-mega{
+                &.back{
+                    right: 0;
+                }
+            }
+            &.dexp-static{
+                position: static !important;
+            }
+        }
+        ul.menu{
+            margin: 0;
+            padding: 0;
+            li{
+                list-style: none;
+                ul.menu{
+                    position: absolute;
+                    display: none;
+                    z-index: 999;
+                }
+                .dexp-menu-mega{
+                    display: none;
+                    position: absolute;
+                    z-index: 999;
+                    &.container{
+                        left: 0;
+                    }
+                    .dexp-menu-row{
+                        background: #FFF;
+                        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+                        >.dexp-menu-col{
+                            position: relative;
+                            z-index:1;
+                            &:hover{z-index: 2;}
+                            >ul.menu{
+                                box-shadow: none !important;
+                                position: relative;
+                                display: block;
+                            }
+                        }
+                    }
+                }
+                &:hover{
+                    >.dexp-menu-mega{
+                        display: block;
+                    }
+                    >ul.menu{
+                        display: block;
+                    }
+                }
+            }
+        }
+        .menu-attach-block-wrapper{
+            display: block;
+            background: @base_color;
+            ul.menu{
+                display: block;
+                position: relative;
+                left: 0;
+            }
+            .block{
+                position: relative;
+                width: 100%;
+                top:0;
+                padding: 0;
+                h2.block-title{
+                    font-size:20px;
+                    margin: 0 0 20px 0;
+                }
+                a {
+                    line-height:20px !important;
+                    padding:0 !important;
+                }
+            }
+        }
+    }
+}

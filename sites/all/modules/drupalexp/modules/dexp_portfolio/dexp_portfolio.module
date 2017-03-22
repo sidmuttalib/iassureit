@@ -1,0 +1,96 @@
+<?php
+
+/*
+ * Implements hook_views_api
+ */
+function dexp_portfolio_views_api() {
+  return array(
+    'api' => 3,
+  ); 
+}
+
+/*
+ * Implements hook_entity_info_alter
+ */
+/*
+function dexp_portfolio_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['dexp_portfolio'] = array(
+      'label' => t('Dexp Portfolio'),
+      'custom settings' => TRUE,
+  );
+}
+*/
+/**
+ * Implements hook_preprocess_node().
+ */
+function dexp_portfolio_preprocess_node(&$vars) {
+  $node = $vars['node'];
+  if (isset($vars['view']) && isset($vars['view']->style_plugin) && $vars['view']->style_plugin->plugin_name == 'dexp_portfolio') {
+    $view = $vars['view'];
+    $options = $view->style_options;
+    if (isset($options['dexp_portfolio_filter_vocabulary'])) {
+      $terms = _dexp_portfolio_node_get_term($view->style_options['dexp_portfolio_filter_vocabulary'], $node->nid);
+      if (!empty($terms)) {
+        foreach ($terms as $term) {
+          $vars['classes_array'][] = drupal_html_class($term->name);
+        }
+      }
+    }
+    $lg_zise = 12/$options['dexp_portfolio_col_lg'];
+    $md_zise = 12/$options['dexp_portfolio_col_md'];
+    $sm_zise = 12/$options['dexp_portfolio_col_sm'];
+    $xs_zise = 12/$options['dexp_portfolio_col_xs'];
+    $span_class = " col-lg-{$lg_zise} col-md-{$md_zise} col-sm-{$sm_zise} col-xs-{$xs_zise}";
+    $vars['classes_array'][] = $span_class;
+    $vars['classes_array'][] = 'portfolio-item';
+    //Add data for sort
+    if(isset($options['dexp_portfolio_sort']) && $options['dexp_portfolio_sort']){
+        $vars['attributes_array']['data-title'] = $node->title;
+        $vars['attributes_array']['data-created'] = $node->created;
+    }
+  }
+}
+
+/*
+ * Helpers
+ */
+
+function _dexp_portfolio_node_get_term($vid, $nid) {
+  $results = db_query('select t.tid FROM {taxonomy_index} t LEFT JOIN {taxonomy_term_data} tt ON t.tid = tt.tid WHERE t.nid = :nid AND tt.vid = :vid', array(':vid' => $vid, ':nid' => $nid));
+  $terms = array();
+  foreach ($results as $result) {
+    $terms[] = taxonomy_term_load($result->tid);
+  }
+  return $terms;
+}
+
+/**
+ * Implements hook_image_default_styles().
+ */
+function dexp_portfolio_image_default_styles() {
+  $styles = array();
+
+  $styles['portfolio'] = array(
+    'name' => 'portfolio',
+    'label' => 'Portfolio',
+    'effects' => array(
+      1 => array(
+        'label' => 'Scale and crop',
+        'help' => 'Scale and crop will maintain the aspect-ratio of the original image, then crop the larger dimension. This is most useful for creating perfectly square thumbnails without stretching the image.',
+        'effect callback' => 'image_scale_and_crop_effect',
+        'dimensions callback' => 'image_resize_dimensions',
+        'form callback' => 'image_resize_form',
+        'summary theme' => 'image_resize_summary',
+        'module' => 'image',
+        'name' => 'image_scale_and_crop',
+        'data' => array(
+          'width' => 560,
+          'height' => 400,
+        ),
+        'weight' => 1,
+      ),
+    ),
+  );
+
+  return $styles;
+}

@@ -1,0 +1,4 @@
+name = Dexp Page Elements
+description = "Provide page title & breadcrumb as blocks."
+core = 7.x
+package = DrupalExp

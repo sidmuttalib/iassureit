@@ -1,0 +1,90 @@
+#block-dexp-quicksettings-dexp-quicksettings{
+  position: fixed;
+  h3.block-title{
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 48px;
+    text-align: center;
+  }
+  background: #303030;
+  position: fixed;
+  left: -207px;
+  .transition(left);
+  top: 96px;
+  z-index: 999;
+  &.open{
+    left:0;
+  }
+  .content{
+    padding: 2px 18px 10px;
+    width: 205px;
+  }
+  h3{
+    color: #848688;
+    font-size: 13px;
+    margin: 5px 0 -5px 1px;
+    line-height: 30px;
+    clear:both;
+  }
+  select.form-select{
+    border-radius: 2px;
+    color: #848688;
+    cursor: pointer;
+    font-size: 13px;
+    margin: 2px 0 10px 2px;
+    padding: 5px;
+    width: 164px;
+    height: 30px !important;
+    line-height: 30px;
+  }
+  ul.presets,ul.dexp_background{
+    margin: 0;
+    padding: 0;
+    li{
+      float: left;
+      margin:4px 2px 0;
+      span{
+        cursor: pointer;
+        width: 37px; height: 25px; display: block;
+        border-radius: 2px;
+      }
+    }
+  }
+  span{
+    &.bg1{
+      background: url("../images/bg/1.png");
+    }
+    &.bg2{
+      background: url("../images/bg/2.png");
+    }
+    &.bg3{
+      background: url("../images/bg/3.png");
+    }
+    &.bg4{
+      background: url("../images/bg/4.png");
+    }
+    &.bg5{
+      background: url("../images/bg/5.png");
+    }
+    &.bg6{
+      background: url("../images/bg/6.png");
+    }
+    &.bg7{
+      background: url("../images/bg/7.png");
+    }
+    &.bg8{
+      background: url("../images/bg/8.png");
+    }
+  }
+  .quicksettings_toggle{
+    background: url("../images/switcher.png") no-repeat scroll 10px center #303030;
+    display: block;
+    height: 44px;
+    position: absolute;
+    right: -44px;
+    text-indent: -9999px;
+    top: 0;
+    width: 44px;
+    cursor: pointer;
+  }
+}

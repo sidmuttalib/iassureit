@@ -1,0 +1,109 @@
+/*
+Add your custom css here. Do not touch on style-color-name.css files
+*/
+.box-title a { 
+	color:#444444 !important
+	}
+#section-header .site-logo img {
+	width: 125px !important;
+
+}
+.hotline ul li { 
+	display: inline-block;
+	}
+.mobslide {
+	font-family: 'Lato' !important;
+	font-size:2em !important;
+	color: #198dc7;
+	 font-weight: 300 !important;
+}
+.mobslide-h {
+	font-family: 'Lato' !important;
+	font-size:4.5em !important;
+	color:#007CC4 !important;
+	 font-weight: 300 !important;
+}
+.mobslide-hwhite {
+	font-family: 'Lato' !important;
+	font-size:4.5em !important;
+	color:#fff !important;
+	 font-weight: 300 !important;
+}
+
+.mobslide-white {
+	font-family: 'Lato' !important;
+	font-size:2em !important;
+	color:#efefef !important;
+	 font-weight: 300 !important;
+}
+.moving-zone .popup h2{
+	font-size:25px;
+	}
+#block-block-112, 
+#block-block-118,
+#block-block-124,
+#block-block-117,
+#block-block-116 {
+	  padding: 35px 0 0 0;
+}
+#section-page-title {
+
+ margin-bottom: 0px !important;
+}
+
+#block-block-47 { padding: 0 !important}
+
+.page-node-110 .region-user-00 { background: #ccc; }
+
+.page-node-110 .dexp-grid-item.col-lg-3.col-md-3.col-sm-6.col-xs-12 { width: 25% !important; left: 0 !important; position:inherit !important; }
+
+
+#block-views-active-job-list-block a { 
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  }
+
+#block-views-active-job-list-block .block-title {
+	font-size: 55px !important;
+  font-weight: 500;
+  margin: 0;
+  padding-top: 39px;
+}
+
+.node-career-add-new-job .field-type-text-with-summary .field-label {
+	  text-transform: uppercase;
+  border-bottom: 1px solid #e4e3e3;
+  padding: 20px 0 10px 0;
+  font-size: 24px !important;
+  	
+}
+input[type="email"] {
+  background: #F5F5F5;
+  border: 1px solid #e5e5e5;
+  border-radius: 2px;
+  box-shadow: none;
+  display: inline-block;
+  line-height: 25px;
+  margin-bottom: 15px;
+  padding: 5px;
+  resize: none;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  vertical-align: middle;
+    width: 100%;
+}
+#edit-submitted-resume-upload { margin-bottom: 15px;}
+
+.region-right-sidebar #block-webform-client-block-107 .form-item {  
+  margin-top: 0;
+  margin-bottom: 0;}
+#block-webform-client-block-107 .block-title {
+	margin-top:20px;}
+	
+.width-sixty { width:60%;}
+#block-views-blog-categories-block{ margin-top: 8%;}
+#block-system-main { margin-top: 4%;}

@@ -1,0 +1,76 @@
+name = Orane
+description = "Orane - Responsive Multi-Purpose Drupal Theme"
+core = 7.x
+base theme = drupalexp
+
+regions[slider] = Slider
+regions[logo] = Logo
+regions[navigation] = Navigation
+regions[search] = Search
+regions[breadcrumb] = Breadcrumb
+regions[pagetitle] = Page Title
+regions[tagline] = Tag Line
+regions[maps] = Google Maps
+regions[top_left] = Top Left
+regions[top_right] = Top Right
+regions[top_content] = Top Content
+
+regions[feature_first] = Feature
+
+regions[content] = Content
+regions[right_sidebar] = Right sidebar
+regions[left_sidebar] = Left sidebar
+
+regions[user_00] = User 00
+regions[user_01] = User 01
+regions[user_02] = User 02
+regions[user_03] = User 03
+regions[user_04] = User 04
+regions[user_05] = User 05
+regions[user_06] = User 06
+regions[user_07] = User 07
+regions[user_08] = User 08
+
+regions[work] = Work
+regions[Blog] = Blog
+
+regions[client] = Clients
+regions[subscribe] = Subscribe
+regions[social] = Social
+regions[bottom_first] = Bottom First
+regions[bottom_second] = Bottom Second
+regions[bottom_third] = Bottom Third
+regions[bottom_fourth] = Bottom Fourth
+
+regions[copyright] = Copyright
+regions[footer_menu] = Footer Menu
+
+stylesheets[all][] = assets/css/custom.css
+
+lessc[] = lessc/fonts.less
+lessc[] = lessc/mixin.less
+lessc[] = lessc/general.less
+lessc[] = lessc/top.less
+lessc[] = lessc/style.less
+lessc[] = lessc/social.less
+lessc[] = lessc/block.less
+lessc[] = lessc/blog.less
+lessc[] = lessc/comment.less
+lessc[] = lessc/shop.less
+lessc[] = lessc/shortcode.less
+lessc[] = lessc/header.less
+lessc[] = lessc/portfolio.less
+lessc[] = lessc/slideshow.less
+lessc[] = lessc/pages.less
+lessc[] = lessc/carousel.less
+lessc[] = lessc/quicksettings.less
+lessc[] = lessc/style-rtl.less
+lessc[] = lessc/megamenu.less
+lessc[] = lessc/custom.less
+
+scripts[] = assets/js/jquery.dexppiechart.js
+scripts[] = assets/js/orane.js
+
+settings[drupalexp_default_preset] = '0'
+settings[drupalexp_wrapper_class] = 'bg6 header-color'
+settings[drupalexp_direction] = 'default'

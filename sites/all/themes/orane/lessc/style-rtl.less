@@ -1,0 +1,197 @@
+body.rtl{
+
+    /*List style in RTL 
+    ============================================*/
+    .dexp-list{
+        li{
+            &:after{
+                font-family: "FontAwesome";                
+                color: @base_color;
+                margin-left: 8px;
+            }
+            &:before{
+                margin-right: 0;
+            }
+        }
+        &.list-big-icon{
+            li{
+                &:after{
+                    font-size: 20px;
+                }
+            }
+        }
+        &.list-01{
+            li:after{
+                content:"\f14a";
+            }
+            li:before{
+                content:"";
+            }
+        }
+        &.list-02{
+            li:after{
+                content:"\f138";            
+            }
+            li:before{
+                content:"";      
+
+            }
+        }
+    }
+
+    .headline{
+        padding-right: 0;
+    }
+    .brd-headling{
+        float: right;
+    }
+    .skill-bar .bar-wrap strong{
+        left: 0;
+        right: auto;
+    }
+    .tline-row-r {
+        margin: 0 497px 0 0;
+    }
+    .dexp_tab_wrapper ul.nav-tabs{
+        padding-right: 0;
+        li{
+            float: right;
+            margin-right: 0;
+            margin-left: 5px;
+        }
+    }
+    .alert{
+        .close{
+            float: left;
+        }
+    }
+    .dexp-shortcodes-box{
+        &.box-left{
+            .box-icon{
+                float: right;
+            }
+            .box-title, .box-content{
+                margin-left: 0;
+                margin-right: 120px;
+            }
+            .box-title:after{
+                left: auto;
+                right: 0px;
+            }
+            &.box-border{
+                .box-icon{
+                    margin-right: -60px;
+                }
+                margin-right:60px;      
+                .box-title
+                {
+                    margin-right: 80px;           
+                }
+                .box-content{
+                    margin-right: 80px;     
+                    padding-left: 20px;
+                    padding-right: 0;
+                }            
+            }
+        }
+        &.box-top-left {
+            .box-icon{
+                text-align: right;
+            }
+            .box-title{
+                text-align: right;
+            }
+        }
+    }
+    .table th{
+        text-align: right;
+    }
+    .flickr_badge_image {
+        float: right;
+    }
+    .panel-group .panel .panel-heading .panel-title a i{
+        padding-right: 0;
+        padding-left: 5px;
+    }
+    .post-content{
+        text-align: right;
+    }
+    .title-left h3:before{
+        left: auto;
+        right: 0;
+    }
+    .popular-post{
+        .icon-overlay{
+            float: right;
+        }
+        .meta{
+            margin-left: 0;
+            margin-right: 85px;
+        }
+    }
+    .tags ul li{
+        float: right;
+    }
+    .title-wrapper .title-left:before{
+        right: 0;
+        left: auto;
+    }
+    ul.arrow li:before, ul.circled li:before{
+        margin-right: 0;
+        margin-left: 10px;
+    }
+    #section-top {
+        #block-views-simple-shopping-cart-block,#block-locale-language,#block-system-user-menu,#block-dexp-popup-login-bootstrap-login {
+            float:left;
+        }
+        #block-views-simple-shopping-cart-block {
+            border-left:none;
+            border-right: 1px solid #eceef0;
+        }
+    }
+    .panel-group{
+        &.style03{
+            .panel{
+                a:before{
+                    content:'';
+                    padding-right:0 !important;
+                }
+                a:after {
+                    color: #21b6a8;
+                    content: "";
+                    font-family: FontAwesome;
+                    font-size: 30px;
+                    font-style: normal;
+                    font-weight: normal;
+                    padding-left: 0.5em;
+                    padding-right:0 !important;
+                    text-decoration: inherit;
+                }
+            }
+        }
+    }
+    .block:not(.title-center){
+        .block-title
+        {
+            &:before{
+                left: auto;
+                right: 0;
+            }
+        }
+    }
+    h3.heading-title:not(.title-center){
+        &:before{
+            left: auto;
+            right: 0;
+        }
+    }
+
+    blockquote {
+        border-right: 5px solid #eee;
+        margin: 0;
+        padding: 10px 20px;
+        border-right-color: @base_color;
+        border-left: none;
+    }
+    /*End*/
+}

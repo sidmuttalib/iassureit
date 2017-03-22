@@ -1,0 +1,13 @@
+name = Dexp Portfolio
+description = "Provides template for portfolio pages."
+core = 7.x
+package = DrupalExp
+
+dependencies[] = taxonomy
+dependencies[] = views
+
+files[] = dexp_portfolio.views.inc
+files[] = dexp_portfolio_plugin_style_portfolio.inc
+
+version = "7.x-1.0"
+core = "7.x"

@@ -1,0 +1,12 @@
+name = DrupalExp Layer Slider
+description = "Layer Slider module base on Slider Revolution Responsive jQuery plugin."
+dependencies[] = jquery_update
+dependencies[] = libraries
+dependencies[] = media
+dependencies[] = ctools
+package = DrupalExp
+core = 7.x
+version = "7.x-1.0-beta"
+core = "7.x"
+project = "DrupalExp"
+datestamp = "1371639600"

@@ -1,0 +1,4 @@
+name = DrupalExp Quick Settings
+description = "Changes the settings of drupalexp theme framework."
+core = 7.x
+package = DrupalExp
